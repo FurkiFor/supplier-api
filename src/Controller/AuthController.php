@@ -9,41 +9,46 @@
 namespace App\Controller;
 
 
+use App\Entity\Company;
 use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller as Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class AuthController extends ApiController
+class AuthController extends AbstractApiController
 {
 
     public function register(Request $request, UserPasswordEncoderInterface $encoder)
     {
         $connection = $this->getDoctrine()->getManager();
-        $request = $this->transformJsonBody($request);
+   //     $request = $this->transformJsonBody($request);
         $password = $request->get('password');
         $email = $request->get('email');
         $companyId = $request->get('company_id');
         $name = $request->get('name');
         if (empty($password) || empty($email) || empty($companyId) || empty($name)){
-            return $this->respondValidationError("Invalid  Password or Email or name or companyId");
+            return $this->json("Invalid  Password or Email or name or companyId",401);
         }
-
-
+        $company =  $this->getDoctrine()->getRepository(Company::class)->find($request->get('company_id'));
+        if(!$company){
+            return $this->json("Company Not Found",401);
+        }
         $user = new User();
         $user->setPassword($encoder->encodePassword($user, $password));
         $user->setEmail($email);
         $user->setName($name);
-        $user->setCompanyId($companyId);
-        $user->setRoles(["ROLE_USER"]);
+        $user->setCompany($company);
+        $user->setRoles(["ROLE_COMPANY_USER"]);
         $connection->persist($user);
         $connection->flush();
-        return $this->respondWithSuccess(sprintf('User %s successfully created', $user->getUsername()));
+        return $this->json(sprintf('User %s successfully created', $user->getUsername()));
     }
 
     /**
