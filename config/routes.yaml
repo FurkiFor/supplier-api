@@ -10,6 +10,49 @@ api_login_check:
     path: /api/login_check
     controller: App\Controller\AuthController::getTokenUser
 
-test:
-    path: /api/test
-    controller: App\Controller\ApiController::test
+user_list:
+    path: /api/users
+    controller: App\Controller\UserController::indexAction
+    methods: [GET]
+user_me:
+    path: /api/user/me
+    controller: App\Controller\UserController::meAction
+    methods: [GET]
+
+# PRODUCT ROUTE
+product_list:
+    path: /api/product
+    controller: App\Controller\ProductController::indexAction
+    methods: [ GET ]
+product_create:
+    path: /api/product
+    controller: App\Controller\ProductController::createAction
+    methods: [ POST ]
+product_single:
+    path: /api/product/{id}
+    controller: App\Controller\ProductController::singleAction
+    methods: [ GET ]
+    requirements:
+        id: '\d+'
+# ORDER ROUTE
+order_list:
+    path: /api/order
+    controller: App\Controller\OrderController::indexAction
+    methods: [ GET ]
+order_create:
+    path: /api/order
+    controller: App\Controller\OrderController::createAction
+    methods: [ POST ]
+order_single:
+    path: /api/order/{id}
+    controller: App\Controller\OrderController::singleAction
+    methods: [ GET ]
+    requirements:
+        id: '\d+'
+order_update:
+    path: /api/order/{id}
+    controller: App\Controller\OrderController::updateAction
+    methods: [ POST ]
+    requirements:
+        id: '\d+'
+
