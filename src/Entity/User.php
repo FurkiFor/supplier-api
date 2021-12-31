@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
@@ -32,16 +33,21 @@ class User implements UserInterface
      */
     private $roles = [];
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $companyId;
 
     /**
      * @var string The hashed companyId
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Company")
+     */
+    private $company;
+
+    /**
+     * @return mixed
+     */
 
     public function getId(): ?int
     {
@@ -56,12 +62,6 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-    public function setName(string $name): self
-    {
-        $this->name = $name;
 
         return $this;
     }
@@ -80,7 +80,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -90,7 +90,14 @@ class User implements UserInterface
      */
     public function getName(): string
     {
-        return (string) $this->name;
+        return (string)$this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -99,7 +106,7 @@ class User implements UserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_USER';
+        $roles[] = 'ROLE_CUSTOMER';
         return array_unique($roles);
     }
 
@@ -110,19 +117,26 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
+
 
     public function setPassword(string $password): self
     {
         $this->password = $password;
 
         return $this;
+    }
+
+    public function getCompany()
+    {
+        return $this->company;
+    }
+
+    /**
+     * @param mixed $company
+     */
+    public function setCompany($company): void
+    {
+        $this->company = $company;
     }
 
     /**
